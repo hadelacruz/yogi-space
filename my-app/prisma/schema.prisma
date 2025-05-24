@@ -56,7 +56,7 @@ model Sesion {
   instructor   Usuario    @relation("InstructorClases", fields: [instructorId], references: [id])
   salaId       Int?       @map("sala_id")
   sala         Sala?      @relation(fields: [salaId], references: [id])
-  fecha        Date
+  fecha        DateTime
   horaInicio   DateTime   @map("hora_inicio")
   horaFin      DateTime   @map("hora_fin")
   cupoMaximo   Int        @map("cupo_maximo")
