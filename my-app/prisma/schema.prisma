@@ -7,11 +7,96 @@ generator client {
   provider = "prisma-client-js"
 }
 
-model User {
-  id        Int      @id @default(autoincrement())
-  name      String
-  email     String   @unique
-  createdAt DateTime @default(now())
+model Rol {
+  id      Int      @id @default(autoincrement())
+  nombre  String   @unique
+  usuarios Usuario[]
+
+  @@map("rol")
 }
 
+model Usuario {
+  id         Int         @id @default(autoincrement())
+  nombre     String
+  correo     String      @unique
+  telefono   String?
+  rolId      Int         @map("rol_id")
+  rol        Rol         @relation(fields: [rolId], references: [id])
+  clases     Sesion[]    @relation("InstructorClases")
+  citasDadas CitaPersonal[] @relation("InstructorCitas")
+  citasRecibidas CitaPersonal[] @relation("ClienteCitas")
+  inscripciones Inscripcion[] @relation("ClienteInscripciones")
 
+  @@map("usuario")
+}
+
+model Clase {
+  id          Int       @id @default(autoincrement())
+  nombre      String
+  descripcion String?
+  sesiones    Sesion[]
+
+  @@map("clase")
+}
+
+model Sala {
+  id        Int     @id @default(autoincrement())
+  nombre    String
+  ubicacion String?
+  sesiones  Sesion[]
+
+  @@map("sala")
+}
+
+model Sesion {
+  id           Int        @id @default(autoincrement())
+  claseId      Int        @map("clase_id")
+  clase        Clase      @relation(fields: [claseId], references: [id])
+  instructorId Int        @map("instructor_id")
+  instructor   Usuario    @relation("InstructorClases", fields: [instructorId], references: [id])
+  salaId       Int?       @map("sala_id")
+  sala         Sala?      @relation(fields: [salaId], references: [id])
+  fecha        Date
+  horaInicio   DateTime   @map("hora_inicio")
+  horaFin      DateTime   @map("hora_fin")
+  cupoMaximo   Int        @map("cupo_maximo")
+  inscripciones Inscripcion[]
+
+  @@map("sesion")
+}
+
+model Inscripcion {
+  id                Int         @id @default(autoincrement())
+  sesionId          Int         @map("sesion_id")
+  sesion            Sesion      @relation(fields: [sesionId], references: [id])
+  clienteId         Int         @map("cliente_id")
+  cliente           Usuario     @relation("ClienteInscripciones", fields: [clienteId], references: [id])
+  fechaInscripcion  DateTime    @default(now()) @map("fecha_inscripcion")
+  asistencia        Asistencia?
+
+  @@unique([sesionId, clienteId])
+  @@map("inscripcion")
+}
+
+model Asistencia {
+  id             Int         @id @default(autoincrement())
+  inscripcionId  Int         @unique @map("inscripcion_id")
+  inscripcion    Inscripcion @relation(fields: [inscripcionId], references: [id])
+  asistio        Boolean     @default(false)
+
+  @@map("asistencia")
+}
+
+model CitaPersonal {
+  id            Int      @id @default(autoincrement())
+  clienteId     Int      @map("cliente_id")
+  cliente       Usuario  @relation("ClienteCitas", fields: [clienteId], references: [id])
+  instructorId  Int      @map("instructor_id")
+  instructor    Usuario  @relation("InstructorCitas", fields: [instructorId], references: [id])
+  fecha         DateTime
+  horaInicio    DateTime @map("hora_inicio")
+  horaFin       DateTime @map("hora_fin")
+  motivo        String?
+
+  @@map("cita_personal")
+}
