@@ -1,45 +1,37 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-generator client {
-  provider = "prisma-client-js"
-}
-
-enum CupoMaximo {
-  C10 @map("10")
-  C20 @map("20")
-  C30 @map("30")
-  C40 @map("40")
-}
-
-
 model Rol {
-  id      Int      @id @default(autoincrement())
-  nombre  String   @unique
+  id       Int       @id @default(autoincrement())
+  nombre   String    @unique
   usuarios Usuario[]
 
   @@map("rol")
 }
 
 model Usuario {
-  id         Int         @id @default(autoincrement())
-  nombre     String
-  correo     String      @unique
-  telefono   String?
-  rolId      Int         @map("rol_id")
-  rol        Rol         @relation(fields: [rolId], references: [id])
-  clases     Sesion[]    @relation("InstructorClases")
-  citasDadas CitaPersonal[] @relation("InstructorCitas")
+  id             Int            @id @default(autoincrement())
+  nombre         String
+  correo         String         @unique
+  telefono       String?
+  rolId          Int            @map("rol_id")
   citasRecibidas CitaPersonal[] @relation("ClienteCitas")
-  inscripciones Inscripcion[] @relation("ClienteInscripciones")
+  citasDadas     CitaPersonal[] @relation("InstructorCitas")
+  inscripciones  Inscripcion[]  @relation("ClienteInscripciones")
+  clases         Sesion[]       @relation("InstructorClases")
+  rol            Rol            @relation(fields: [rolId], references: [id])
 
   @@map("usuario")
 }
 
 model Clase {
-  id          Int       @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   nombre      String
   descripcion String?
   sesiones    Sesion[]
@@ -48,7 +40,7 @@ model Clase {
 }
 
 model Sala {
-  id        Int     @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   nombre    String
   ubicacion String?
   sesiones  Sesion[]
@@ -57,54 +49,61 @@ model Sala {
 }
 
 model Sesion {
-  id           Int        @id @default(autoincrement())
-  claseId      Int        @map("clase_id")
-  clase        Clase      @relation(fields: [claseId], references: [id])
-  instructorId Int        @map("instructor_id")
-  instructor   Usuario    @relation("InstructorClases", fields: [instructorId], references: [id])
-  salaId       Int?       @map("sala_id")
-  sala         Sala?      @relation(fields: [salaId], references: [id])
-  fecha        DateTime
-  horaInicio   DateTime   @map("hora_inicio")
-  horaFin      DateTime   @map("hora_fin")
-  cupoMaximo   CupoMaximo   @map("cupo_maximo")
+  id            Int           @id @default(autoincrement())
+  claseId       Int           @map("clase_id")
+  instructorId  Int           @map("instructor_id")
+  salaId        Int?          @map("sala_id")
+  fecha         DateTime
+  horaInicio    DateTime      @map("hora_inicio")
+  horaFin       DateTime      @map("hora_fin")
+  cupoMaximo    CupoMaximo    @map("cupo_maximo")
   inscripciones Inscripcion[]
+  clase         Clase         @relation(fields: [claseId], references: [id])
+  instructor    Usuario       @relation("InstructorClases", fields: [instructorId], references: [id])
+  sala          Sala?         @relation(fields: [salaId], references: [id])
 
   @@map("sesion")
 }
 
 model Inscripcion {
-  id                Int         @id @default(autoincrement())
-  sesionId          Int         @map("sesion_id")
-  sesion            Sesion      @relation(fields: [sesionId], references: [id])
-  clienteId         Int         @map("cliente_id")
-  cliente           Usuario     @relation("ClienteInscripciones", fields: [clienteId], references: [id])
-  fechaInscripcion  DateTime    @default(now()) @map("fecha_inscripcion")
-  asistencia        Asistencia?
+  id               Int         @id @default(autoincrement())
+  sesionId         Int         @map("sesion_id")
+  clienteId        Int         @map("cliente_id")
+  fechaInscripcion DateTime    @default(now()) @map("fecha_inscripcion")
+  asistencia       Asistencia?
+  cliente          Usuario     @relation("ClienteInscripciones", fields: [clienteId], references: [id])
+  sesion           Sesion      @relation(fields: [sesionId], references: [id])
 
   @@unique([sesionId, clienteId])
   @@map("inscripcion")
 }
 
 model Asistencia {
-  id             Int         @id @default(autoincrement())
-  inscripcionId  Int         @unique @map("inscripcion_id")
-  inscripcion    Inscripcion @relation(fields: [inscripcionId], references: [id])
-  asistio        Boolean     @default(false)
+  id            Int         @id @default(autoincrement())
+  inscripcionId Int         @unique @map("inscripcion_id")
+  asistio       Boolean     @default(false)
+  inscripcion   Inscripcion @relation(fields: [inscripcionId], references: [id])
 
   @@map("asistencia")
 }
 
 model CitaPersonal {
-  id            Int      @id @default(autoincrement())
-  clienteId     Int      @map("cliente_id")
-  cliente       Usuario  @relation("ClienteCitas", fields: [clienteId], references: [id])
-  instructorId  Int      @map("instructor_id")
-  instructor    Usuario  @relation("InstructorCitas", fields: [instructorId], references: [id])
-  fecha         DateTime
-  horaInicio    DateTime @map("hora_inicio")
-  horaFin       DateTime @map("hora_fin")
-  motivo        String?
+  id           Int      @id @default(autoincrement())
+  clienteId    Int      @map("cliente_id")
+  instructorId Int      @map("instructor_id")
+  fecha        DateTime
+  horaInicio   DateTime @map("hora_inicio")
+  horaFin      DateTime @map("hora_fin")
+  motivo       String?
+  cliente      Usuario  @relation("ClienteCitas", fields: [clienteId], references: [id])
+  instructor   Usuario  @relation("InstructorCitas", fields: [instructorId], references: [id])
 
   @@map("cita_personal")
+}
+
+enum CupoMaximo {
+  C10 @map("10")
+  C20 @map("20")
+  C30 @map("30")
+  C40 @map("40")
 }

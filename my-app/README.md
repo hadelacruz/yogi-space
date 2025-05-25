@@ -36,18 +36,12 @@ cp .env.example .env
 npm run setup:db
 ```
 
-5. Generate schema.sql:
-
-```bash
-npm run generate:schema
-```
-
-6. Insert data :
+5. Insert data :
 
 >[!IMPORTANT]
 >Run the data.sql file (attached in the delivery) in the database created above (pgAdmin)
 
-7. Open [http://localhost:3000](http://localhost:3000) in your browser
+6. Open [http://localhost:3000](http://localhost:3000) in your browser
 
 
 ## Tech Stack

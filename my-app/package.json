@@ -7,9 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "setup:db": "npx prisma migrate dev --name init",
-    "generate:schema": "npx prisma migrate diff --from-empty --to-schema-datamodel prisma/schema.prisma --script > schema.sql"
-
+    "setup:db": "npx prisma migrate deploy"
   },
   "dependencies": {
     "@prisma/client": "^6.8.2",
