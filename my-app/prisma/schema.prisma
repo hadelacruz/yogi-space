@@ -7,6 +7,14 @@ generator client {
   provider = "prisma-client-js"
 }
 
+enum CupoMaximo {
+  C10 @map("10")
+  C20 @map("20")
+  C30 @map("30")
+  C40 @map("40")
+}
+
+
 model Rol {
   id      Int      @id @default(autoincrement())
   nombre  String   @unique
@@ -59,7 +67,7 @@ model Sesion {
   fecha        DateTime
   horaInicio   DateTime   @map("hora_inicio")
   horaFin      DateTime   @map("hora_fin")
-  cupoMaximo   Int        @map("cupo_maximo")
+  cupoMaximo   CupoMaximo   @map("cupo_maximo")
   inscripciones Inscripcion[]
 
   @@map("sesion")
