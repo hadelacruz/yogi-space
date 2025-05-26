@@ -2,7 +2,7 @@
 
 import { useSessionSummary } from '@/hooks/useGetSesionSummary'
 
-export default function ListaSesionesSummary() {
+export default function TableSummary() {
   const { sesiones, loading, error } = useSessionSummary()
 
   if (loading) return <p>Cargando sesiones...</p>

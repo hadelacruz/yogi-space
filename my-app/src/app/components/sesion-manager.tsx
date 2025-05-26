@@ -2,7 +2,7 @@
 
 import { useGetSession } from '@/hooks/useGetSesion'
 
-export default function ListaSesionesManager() {
+export default function TablaManager() {
   const { sesiones, loading, error } = useGetSession()
   
 
