@@ -30,7 +30,7 @@ npm install
 cp .env.example .env
 ```
 
-4. Start DB:
+4. Create DB:
 
 ```bash
 npm run setup:db
@@ -39,7 +39,7 @@ npm run setup:db
 5. Insert data :
 
 >[!IMPORTANT]
->Run the data.sql file (attached in the delivery) in the database created above (pgAdmin)
+>To test the project correctly, you must manually execute the prisma/data.sql file using pgAdmin or your preferred PostgreSQL database manager.
 
 6. Open [http://localhost:3000](http://localhost:3000) in your browser
 

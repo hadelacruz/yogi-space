@@ -56,7 +56,7 @@ model Sesion {
   fecha         DateTime
   horaInicio    DateTime      @map("hora_inicio")
   horaFin       DateTime      @map("hora_fin")
-  cupoMaximo    CupoMaximo    @map("cupo_maximo")
+  cupoMaximo    valorCupo    @map("cupo_maximo")
   inscripciones Inscripcion[]
   clase         Clase         @relation(fields: [claseId], references: [id])
   instructor    Usuario       @relation("InstructorClases", fields: [instructorId], references: [id])
@@ -65,45 +65,9 @@ model Sesion {
   @@map("sesion")
 }
 
-model Inscripcion {
-  id               Int         @id @default(autoincrement())
-  sesionId         Int         @map("sesion_id")
-  clienteId        Int         @map("cliente_id")
-  fechaInscripcion DateTime    @default(now()) @map("fecha_inscripcion")
-  asistencia       Asistencia?
-  cliente          Usuario     @relation("ClienteInscripciones", fields: [clienteId], references: [id])
-  sesion           Sesion      @relation(fields: [sesionId], references: [id])
-
-  @@unique([sesionId, clienteId])
-  @@map("inscripcion")
-}
-
-model Asistencia {
-  id            Int         @id @default(autoincrement())
-  inscripcionId Int         @unique @map("inscripcion_id")
-  asistio       Boolean     @default(false)
-  inscripcion   Inscripcion @relation(fields: [inscripcionId], references: [id])
-
-  @@map("asistencia")
-}
-
-model CitaPersonal {
-  id           Int      @id @default(autoincrement())
-  clienteId    Int      @map("cliente_id")
-  instructorId Int      @map("instructor_id")
-  fecha        DateTime
-  horaInicio   DateTime @map("hora_inicio")
-  horaFin      DateTime @map("hora_fin")
-  motivo       String?
-  cliente      Usuario  @relation("ClienteCitas", fields: [clienteId], references: [id])
-  instructor   Usuario  @relation("InstructorCitas", fields: [instructorId], references: [id])
-
-  @@map("cita_personal")
-}
-
-enum CupoMaximo {
-  C10 @map("10")
-  C20 @map("20")
-  C30 @map("30")
-  C40 @map("40")
+enum valorCupo {
+  10
+  20
+  30
+  40
 }

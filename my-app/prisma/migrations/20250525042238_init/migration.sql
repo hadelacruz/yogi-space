@@ -1,5 +1,5 @@
 -- CreateEnum
-CREATE TYPE "CupoMaximo" AS ENUM ('10', '20', '30', '40');
+CREATE TYPE "valorCupo" AS ENUM ('10', '20', '30', '40');
 
 -- CreateTable
 CREATE TABLE "rol" (
@@ -47,41 +47,9 @@ CREATE TABLE "sesion" (
     "fecha" TIMESTAMP(3) NOT NULL,
     "hora_inicio" TIMESTAMP(3) NOT NULL,
     "hora_fin" TIMESTAMP(3) NOT NULL,
-    "cupo_maximo" "CupoMaximo" NOT NULL,
+    "cupo_maximo" "valorCupo" NOT NULL,
 
     CONSTRAINT "sesion_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "inscripcion" (
-    "id" SERIAL NOT NULL,
-    "sesion_id" INTEGER NOT NULL,
-    "cliente_id" INTEGER NOT NULL,
-    "fecha_inscripcion" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
-    CONSTRAINT "inscripcion_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "asistencia" (
-    "id" SERIAL NOT NULL,
-    "inscripcion_id" INTEGER NOT NULL,
-    "asistio" BOOLEAN NOT NULL DEFAULT false,
-
-    CONSTRAINT "asistencia_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "cita_personal" (
-    "id" SERIAL NOT NULL,
-    "cliente_id" INTEGER NOT NULL,
-    "instructor_id" INTEGER NOT NULL,
-    "fecha" TIMESTAMP(3) NOT NULL,
-    "hora_inicio" TIMESTAMP(3) NOT NULL,
-    "hora_fin" TIMESTAMP(3) NOT NULL,
-    "motivo" TEXT,
-
-    CONSTRAINT "cita_personal_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -89,12 +57,6 @@ CREATE UNIQUE INDEX "rol_nombre_key" ON "rol"("nombre");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "usuario_correo_key" ON "usuario"("correo");
-
--- CreateIndex
-CREATE UNIQUE INDEX "inscripcion_sesion_id_cliente_id_key" ON "inscripcion"("sesion_id", "cliente_id");
-
--- CreateIndex
-CREATE UNIQUE INDEX "asistencia_inscripcion_id_key" ON "asistencia"("inscripcion_id");
 
 -- AddForeignKey
 ALTER TABLE "usuario" ADD CONSTRAINT "usuario_rol_id_fkey" FOREIGN KEY ("rol_id") REFERENCES "rol"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -107,21 +69,6 @@ ALTER TABLE "sesion" ADD CONSTRAINT "sesion_instructor_id_fkey" FOREIGN KEY ("in
 
 -- AddForeignKey
 ALTER TABLE "sesion" ADD CONSTRAINT "sesion_sala_id_fkey" FOREIGN KEY ("sala_id") REFERENCES "sala"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "inscripcion" ADD CONSTRAINT "inscripcion_sesion_id_fkey" FOREIGN KEY ("sesion_id") REFERENCES "sesion"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "inscripcion" ADD CONSTRAINT "inscripcion_cliente_id_fkey" FOREIGN KEY ("cliente_id") REFERENCES "usuario"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "asistencia" ADD CONSTRAINT "asistencia_inscripcion_id_fkey" FOREIGN KEY ("inscripcion_id") REFERENCES "inscripcion"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "cita_personal" ADD CONSTRAINT "cita_personal_cliente_id_fkey" FOREIGN KEY ("cliente_id") REFERENCES "usuario"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "cita_personal" ADD CONSTRAINT "cita_personal_instructor_id_fkey" FOREIGN KEY ("instructor_id") REFERENCES "usuario"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 --Create View
 CREATE OR REPLACE VIEW vista_sesiones_detalle AS
@@ -136,3 +83,29 @@ SELECT
 FROM sesion s
 JOIN clase c ON s.clase_id = c.id
 JOIN usuario u ON s.instructor_id = u.id;
+
+CREATE OR REPLACE FUNCTION verificar_sesion_instructor()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF EXISTS (
+    SELECT 1
+    FROM sesion
+    WHERE instructor_id = NEW.instructor_id
+      AND fecha = NEW.fecha
+      AND id <> COALESCE(NEW.id, -1)  -- para evitar conflicto con sí mismo en UPDATE
+      AND (
+        (NEW.hora_inicio < hora_fin AND NEW.hora_fin > hora_inicio)
+      )
+  ) THEN
+    RAISE EXCEPTION 'El instructor ya tiene una sesión que se superpone con este horario.';
+  END IF;
+
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+--Create Trigger to Insert and Update session
+CREATE TRIGGER trg_verificar_sesion_instructor
+BEFORE INSERT OR UPDATE ON sesion
+FOR EACH ROW
+EXECUTE FUNCTION verificar_sesion_instructor();

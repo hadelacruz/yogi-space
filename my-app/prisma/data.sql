@@ -102,100 +102,26 @@ INSERT INTO sala (nombre, ubicacion) VALUES
 ('Rincón Sereno', 'Segundo Nivel'),
 ('Sala de Cristal', 'Azotea');
 
+--Insertar sesiones
 -- Insertar sesiones
-DO $$
-DECLARE
-  i INT;
-  clase_id INT;
-  instructor_id INT;
-  sala_id INT;
-  fecha DATE;
-  hora_inicio TIMESTAMP;
-  hora_fin TIMESTAMP;
-  cupo "CupoMaximo";
-BEGIN
-  FOR i IN 1..50 LOOP
-    clase_id := (SELECT id FROM clase ORDER BY random() LIMIT 1);
-    instructor_id := (SELECT id FROM usuario WHERE rol_id = 2 ORDER BY random() LIMIT 1);
-    sala_id := (SELECT id FROM sala ORDER BY random() LIMIT 1);
-    fecha := DATE '2025-06-01' + (random() * 14)::INT;
-    hora_inicio := fecha + interval '7 hours' + interval '1 hour' * (random() * 10)::INT;
-	hora_fin := hora_inicio + interval '1 hour';
-	cupo := (ARRAY['10', '20', '30', '40'])[floor(random() * 4 + 1)]::"CupoMaximo";
+INSERT INTO sesion (clase_id, instructor_id, sala_id, fecha, hora_inicio, hora_fin, cupo_maximo) VALUES
+-- 1 de junio
+(1, 1, 1, '2025-06-01', '2025-06-01 07:00:00', '2025-06-01 08:00:00', '20'),
+(2, 2, 2, '2025-06-01', '2025-06-01 08:00:00', '2025-06-01 09:00:00', '30'),
+(3, 3, 3, '2025-06-01', '2025-06-01 09:00:00', '2025-06-01 10:00:00', '20'),
+(4, 4, 4, '2025-06-01', '2025-06-01 10:00:00', '2025-06-01 11:00:00', '10'),
+(5, 5, 5, '2025-06-01', '2025-06-01 11:00:00', '2025-06-01 12:00:00', '20'),
 
-    INSERT INTO sesion (clase_id, instructor_id, sala_id, fecha, hora_inicio, hora_fin, cupo_maximo)
-    VALUES (clase_id, instructor_id, sala_id, fecha, hora_inicio, hora_fin, cupo);
-  END LOOP;
-END;
-$$ LANGUAGE plpgsql;
+-- 2 de junio
+(6, 6, 1, '2025-06-02', '2025-06-02 07:00:00', '2025-06-02 08:00:00', '20'),
+(7, 7, 2, '2025-06-02', '2025-06-02 08:00:00', '2025-06-02 09:00:00', '30'),
+(8, 8, 3, '2025-06-02', '2025-06-02 09:00:00', '2025-06-02 10:00:00', '10'),
+(9, 9, 4, '2025-06-02', '2025-06-02 10:00:00', '2025-06-02 11:00:00', '20'),
+(10, 10, 5, '2025-06-02', '2025-06-02 11:00:00', '2025-06-02 12:00:00', '10'),
 
-
--- Insertar inscripciones
-DO $$
-DECLARE
-  i INT;
-  cliente_id INT;
-  sesion_id INT;
-BEGIN
-  FOR i IN 1..100 LOOP
-    cliente_id := (SELECT id FROM usuario WHERE rol_id = 1 ORDER BY random() LIMIT 1);
-    sesion_id := (SELECT id FROM sesion ORDER BY random() LIMIT 1);
-
-    BEGIN
-      INSERT INTO inscripcion (sesion_id, cliente_id)
-      VALUES (sesion_id, cliente_id);
-    EXCEPTION
-      WHEN unique_violation THEN
-        -- ya estaba inscrito, lo ignoramos
-        CONTINUE;
-    END;
-  END LOOP;
-END;
-$$ LANGUAGE plpgsql;
-
--- Insertar asistencias
-DO $$
-DECLARE
-  ins_id INT;
-  asistio BOOL;
-BEGIN
-  FOR ins_id IN SELECT id FROM inscripcion LOOP
-    asistio := random() < 0.75; -- 75% chance de asistir
-    INSERT INTO asistencia (inscripcion_id, asistio)
-    VALUES (ins_id, asistio);
-  END LOOP;
-END;
-$$ LANGUAGE plpgsql;
-
--- Insertar citas personales
-DO $$
-DECLARE
-  i INT;
-  cliente_id INT;
-  instructor_id INT;
-  fecha DATE;
-  hora_inicio TIMESTAMP;
-  hora_fin TIMESTAMP;
-  motivo TEXT;
-BEGIN
-  FOR i IN 1..30 LOOP
-    cliente_id := (SELECT id FROM usuario WHERE rol_id = 1 ORDER BY random() LIMIT 1);
-    instructor_id := (SELECT id FROM usuario WHERE rol_id = 2 AND id <> cliente_id ORDER BY random() LIMIT 1);
-    fecha := DATE '2025-06-01' + (random() * 14)::INT;
-    hora_inicio := fecha + interval '8 hours' + interval '1 hour' * (random() * 8)::INT;
-	hora_fin := hora_inicio + interval '45 minutes';
-    motivo := 'Sesión personalizada ' || i;
-
-    BEGIN
-      INSERT INTO cita_personal (cliente_id, instructor_id, fecha, hora_inicio, hora_fin, motivo)
-      VALUES (cliente_id, instructor_id, fecha, hora_inicio, hora_fin, motivo);
-    EXCEPTION
-      WHEN OTHERS THEN
-        CONTINUE;
-    END;
-  END LOOP;
-END;
-$$ LANGUAGE plpgsql;
-
-
-
+-- 3 de junio
+(1, 2, 6, '2025-06-03', '2025-06-03 07:00:00', '2025-06-03 08:00:00', '20'),
+(2, 3, 7, '2025-06-03', '2025-06-03 08:00:00', '2025-06-03 09:00:00', '30'),
+(3, 4, 8, '2025-06-03', '2025-06-03 09:00:00', '2025-06-03 10:00:00', '10'),
+(4, 5, 9, '2025-06-03', '2025-06-03 10:00:00', '2025-06-03 11:00:00', '20'),
+(5, 6, 10, '2025-06-03', '2025-06-03 11:00:00', '2025-06-03 12:00:00', '20');
