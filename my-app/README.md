@@ -21,7 +21,7 @@ git clone https://https://github.com/hadelacruz/yogi-space
 2. Install dependencies:
 
 ```bash
-npm install
+npm install --legacy-peer-deps
 ```
 
 3. Configure your database connection by copying the `.env.example`:
@@ -30,10 +30,10 @@ npm install
 cp .env.example .env
 ```
 
-4. Create DB:
+4. Run DB migrations:
 
 ```bash
-npm run setup:db
+npx prisma migrate dev
 ```
 
 5. Insert data :

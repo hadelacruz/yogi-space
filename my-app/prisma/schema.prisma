@@ -21,9 +21,6 @@ model Usuario {
   correo         String         @unique
   telefono       String?
   rolId          Int            @map("rol_id")
-  citasRecibidas CitaPersonal[] @relation("ClienteCitas")
-  citasDadas     CitaPersonal[] @relation("InstructorCitas")
-  inscripciones  Inscripcion[]  @relation("ClienteInscripciones")
   clases         Sesion[]       @relation("InstructorClases")
   rol            Rol            @relation(fields: [rolId], references: [id])
 
@@ -57,7 +54,6 @@ model Sesion {
   horaInicio    DateTime      @map("hora_inicio")
   horaFin       DateTime      @map("hora_fin")
   cupoMaximo    valorCupo    @map("cupo_maximo")
-  inscripciones Inscripcion[]
   clase         Clase         @relation(fields: [claseId], references: [id])
   instructor    Usuario       @relation("InstructorClases", fields: [instructorId], references: [id])
   sala          Sala?         @relation(fields: [salaId], references: [id])
@@ -66,8 +62,8 @@ model Sesion {
 }
 
 enum valorCupo {
-  10
-  20
-  30
-  40
+  CUP_10 @map("10")
+  CUP_20 @map("20")
+  CUP_30 @map("30")
+  CUP_40 @map("40")
 }
