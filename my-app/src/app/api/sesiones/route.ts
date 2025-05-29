@@ -41,12 +41,25 @@ export async function POST(req: Request) {
 
 export async function GET() {
   try {
-    const sesiones = await prisma.sesion.findMany();
-    return NextResponse.json(sesiones);
+    const sesiones = await prisma.sesion.findMany({
+      include: {
+        clase: {
+          select: { nombre: true },
+        },
+        instructor: {
+          select: { nombre: true },
+        },
+        sala: {
+          select: { nombre: true },
+        },
+      },
+    })
+
+    return NextResponse.json(sesiones)
   } catch (error) {
     return NextResponse.json(
       { error: "Error al obtener sesiones", details: error },
       { status: 500 }
-    );
+    )
   }
 }

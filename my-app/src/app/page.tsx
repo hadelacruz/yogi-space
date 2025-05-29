@@ -1,6 +1,6 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import TableSummary from "./components/sesion-summary";
-import Component from "./components/example";
+import TableManager from "./components/sesion-manager";
 
 export default function Page() {
   return (
@@ -10,7 +10,7 @@ export default function Page() {
         <TabsTrigger value="summary">Summary</TabsTrigger>
       </TabsList>
       {/*Este Component es de ejemplo, donde esta el diseño de la tabla y botones*/}
-      <TabsContent value="manager"><Component /></TabsContent>
+      <TabsContent value="manager"><TableManager /></TabsContent>
       <TabsContent value="summary"><TableSummary /></TabsContent>
     </Tabs>
   );

@@ -19,7 +19,15 @@ export function useSessionCreate() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(nuevaSesion),
+        body: JSON.stringify({
+          claseId: Number(nuevaSesion.claseId),
+          instructorId: Number(nuevaSesion.instructorId),
+          salaId: Number(nuevaSesion.salaId),
+          fecha: nuevaSesion.fecha,
+          horaInicio: `${nuevaSesion.fecha}T${nuevaSesion.horaInicio}`,
+          horaFin: `${nuevaSesion.fecha}T${nuevaSesion.horaFin}`,
+          cupoMaximo: nuevaSesion.cupoMaximo,
+        }),
       });
 
       if (!res.ok) {
