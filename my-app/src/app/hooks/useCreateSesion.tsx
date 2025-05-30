@@ -22,21 +22,22 @@ export function useSessionCreate() {
         body: JSON.stringify({
           claseId: Number(nuevaSesion.claseId),
           instructorId: Number(nuevaSesion.instructorId),
-          salaId: Number(nuevaSesion.salaId),
           fecha: nuevaSesion.fecha,
-          horaInicio: `${nuevaSesion.fecha}T${nuevaSesion.horaInicio}`,
-          horaFin: `${nuevaSesion.fecha}T${nuevaSesion.horaFin}`,
+          horaInicio: `${nuevaSesion.fecha}T${nuevaSesion.horaInicio}:00Z`,
+          horaFin: `${nuevaSesion.fecha}T${nuevaSesion.horaFin}:00Z`,
           cupoMaximo: nuevaSesion.cupoMaximo,
         }),
       });
 
       if (!res.ok) {
-        throw new Error(`Error al crear sesión: ${res.status}`);
+        const errorData = await res.json();
+        throw new Error(errorData.error || "Error al crear sesión");
       }
 
       setSuccess(true);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Error desconocido");
+      throw e;
     } finally {
       setLoading(false);
     }

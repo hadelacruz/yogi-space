@@ -4,7 +4,6 @@ export interface SesionData {
   id: number
   claseId: number
   instructorId: number
-  salaId: number
   fecha: string
   horaInicio: string
   horaFin: string
@@ -24,7 +23,6 @@ export interface SesionSummary {
 export interface NuevaSesion {
   claseId: number | string
   instructorId: number | string
-  salaId: number | string
   fecha: string
   horaInicio: string
   horaFin: string

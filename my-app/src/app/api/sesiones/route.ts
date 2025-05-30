@@ -12,7 +12,6 @@ export async function POST(req: Request) {
     horaFin,
     cupoMaximo,
     claseId,
-    salaId,
     instructorId,
   } = data;
 
@@ -24,7 +23,6 @@ export async function POST(req: Request) {
         horaFin: new Date(horaFin),
         cupoMaximo,
         claseId,
-        salaId,
         instructorId,
       },
     });
@@ -33,7 +31,7 @@ export async function POST(req: Request) {
   } catch (error) {
     console.error(error);
     return NextResponse.json(
-      { error: "Error creando sesión", details: error },
+      { error: "Datos inválidos. Verifica los campos e intenta de nuevo." },
       { status: 500 }
     );
   }
@@ -49,9 +47,7 @@ export async function GET() {
         instructor: {
           select: { nombre: true },
         },
-        sala: {
-          select: { nombre: true },
-        },
+
       },
     })
 

@@ -30,20 +30,10 @@ CREATE TABLE "clase" (
 );
 
 -- CreateTable
-CREATE TABLE "sala" (
-    "id" SERIAL NOT NULL,
-    "nombre" TEXT NOT NULL,
-    "ubicacion" TEXT,
-
-    CONSTRAINT "sala_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
 CREATE TABLE "sesion" (
     "id" SERIAL NOT NULL,
     "clase_id" INTEGER NOT NULL,
     "instructor_id" INTEGER NOT NULL,
-    "sala_id" INTEGER,
     "fecha" TIMESTAMP(3) NOT NULL,
     "hora_inicio" TIMESTAMP(3) NOT NULL,
     "hora_fin" TIMESTAMP(3) NOT NULL,
@@ -67,8 +57,6 @@ ALTER TABLE "sesion" ADD CONSTRAINT "sesion_clase_id_fkey" FOREIGN KEY ("clase_i
 -- AddForeignKey
 ALTER TABLE "sesion" ADD CONSTRAINT "sesion_instructor_id_fkey" FOREIGN KEY ("instructor_id") REFERENCES "usuario"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
--- AddForeignKey
-ALTER TABLE "sesion" ADD CONSTRAINT "sesion_sala_id_fkey" FOREIGN KEY ("sala_id") REFERENCES "sala"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 --Create View
 CREATE OR REPLACE VIEW vista_sesiones_detalle AS

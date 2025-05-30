@@ -36,27 +36,16 @@ model Clase {
   @@map("clase")
 }
 
-model Sala {
-  id        Int      @id @default(autoincrement())
-  nombre    String
-  ubicacion String?
-  sesiones  Sesion[]
-
-  @@map("sala")
-}
-
 model Sesion {
   id            Int           @id @default(autoincrement())
   claseId       Int           @map("clase_id")
   instructorId  Int           @map("instructor_id")
-  salaId        Int?          @map("sala_id")
   fecha         DateTime
   horaInicio    DateTime      @map("hora_inicio")
   horaFin       DateTime      @map("hora_fin")
   cupoMaximo    valorCupo    @map("cupo_maximo")
   clase         Clase         @relation(fields: [claseId], references: [id])
   instructor    Usuario       @relation("InstructorClases", fields: [instructorId], references: [id])
-  sala          Sala?         @relation(fields: [salaId], references: [id])
 
   @@map("sesion")
 }
