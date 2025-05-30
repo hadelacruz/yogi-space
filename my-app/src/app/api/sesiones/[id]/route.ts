@@ -34,14 +34,8 @@ export async function PUT(
   try {
     const { id } = await context.params;
     const sesionId = parseInt(id);
-    const {
-      fecha,
-      horaInicio,
-      horaFin,
-      cupoMaximo,
-      claseId,
-      instructorId,
-    } = await request.json();
+    const { fecha, horaInicio, horaFin, cupoMaximo, claseId, instructorId } =
+      await request.json();
 
     const sesionActualizada = await prisma.sesion.update({
       where: { id: sesionId },
@@ -58,9 +52,11 @@ export async function PUT(
     return NextResponse.json(sesionActualizada, { status: 200 });
   } catch (error) {
     console.error(error);
-    return NextResponse.json(
-      { error: "No se pudo actualizar la sesión" },
-      { status: 500 }
-    );
+    const mensaje =
+      error instanceof Error
+        ? error.message
+        : "Datos inválidos. Verifica los campos e intenta de nuevo.";
+
+    return NextResponse.json({ error: mensaje }, { status: 500 });
   }
 }

@@ -97,8 +97,12 @@ export default function TableManager() {
           cupoMaximo,
         });
         alert("Sesión actualizada correctamente.");
-      } catch {
-        alert("Error: Ingresar datos válidos para actualizar una Sesión");
+      } catch (e) {
+        alert(
+          e instanceof Error
+            ? `Error: ${e.message}`
+            : "Error: Ingresar datos válidos para actualizar una Sesión"
+        );
       }
     } else {
       try {
@@ -111,8 +115,12 @@ export default function TableManager() {
           cupoMaximo,
         });
         alert("Sesión agregada correctamente.");
-      } catch {
-        alert("Error: Ingresar datos válidos para crear una nueva Sesión");
+      } catch (e) {
+        alert(
+          e instanceof Error
+            ? `Error: ${e.message}`
+            : "Error: Ingresar datos válidos para crear una nueva Sesión"
+        );
       }
     }
 
