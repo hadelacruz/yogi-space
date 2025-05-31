@@ -41,7 +41,7 @@ npx prisma migrate dev
 >[!IMPORTANT]
 >To test the project correctly, you must manually execute the prisma/data.sql file using pgAdmin or your preferred PostgreSQL database manager.
 
-6. Open [http://localhost:3000](http://localhost:3000) in your browser
+6. npm run dev and Open [http://localhost:3000](http://localhost:3000) in your browser
 
 
 ## Tech Stack
